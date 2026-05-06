@@ -1,24 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Packet Visualizer</title>
-</head>
-<body>
+    <link rel="stylesheet" href="../static/css/style.css" />
+  </head>
+  <body>
     <h1>Packet Visualizer</h1>
-    <div id="packet-list"></div>
+    <div id="packet-list"></div>    <
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
-    <script>
-        const socket = io();
-
-        socket.on('new_packet', (packet) => {
-            const packetList = document.getElementById('packet-list');
-            const packetElement = document.createElement('div');
-            packetElement.textContent = JSON.stringify(packet);
-            packetList.appendChild(packetElement);
-        });
-    </script>
-</body>
+    <svg id="graph"></svg>
+    <script src="../static/js/graph.js" type="module"></script>
+    <script src="../static/js/socket.js" type="module"></script>
+  </body>
 </html>
