@@ -1,5 +1,5 @@
 import { io } from "https://cdn.socket.io/4.8.3/socket.io.esm.min.js";
-import { handlePacket } from "./graph.js";
+import { handleBatch} from "./graph.js";
 
 const socket = io();
 
@@ -7,9 +7,9 @@ socket.on("connect", () => {
   console.log("Connected to server");
 });
 
-socket.on("new_packet", (data) => {
-  console.log("Received packet data:", data);
-  handlePacket(data);
+socket.on("packet_batch", (data) => {
+  console.log("Received batch data:", data);
+  handleBatch(data);
 });
 
 socket.on("disconnect", () => {

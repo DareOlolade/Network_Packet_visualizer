@@ -7,8 +7,69 @@
     <link rel="stylesheet" href="../static/css/style.css" />
   </head>
   <body>
-    <h1>Packet Visualizer</h1>
-    <div id="packet-list"></div>    <
+   <!-- Grid background -->
+    <div class="grid-bg"></div>
+
+    <!-- Header bar -->
+    <div class="header">
+        <div class="header-dot"></div>
+        <div class="header-title">NETWATCH</div>
+        <div class="stat-row">
+            <span class="stat-label" id="header-status">MONITORING</span>
+        </div>
+    </div>
+
+    <!-- Stats panel -->
+    <div class="stats-panel">
+        <div class="stats-title">NETWORK STATS</div>
+        <div class="stat-row">
+            <span class="stat-label">NODES</span>
+            <span class="stat-value" id="stat-nodes">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">LINKS</span>
+            <span class="stat-value" id="stat-links">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">PACKETS</span>
+            <span class="stat-value" id="stat-packets">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">TCP</span>
+            <span class="stat-value stat-value-tcp" id="stat-tcp">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">UDP</span>
+            <span class="stat-value stat-value-udp" id="stat-udp">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">ICMP</span>
+            <span class="stat-value stat-value-icmp" id="stat-icmp">0</span>
+        </div>
+    </div>
+
+    <!-- Terminal log -->
+    <div class="terminal">
+        <div class="terminal-header">PACKET LOG</div>
+        <div class="terminal-body" id="terminal-body"></div>
+    </div>
+
+    <!-- SVG Graph -->
+    <svg id="graph">
+        <!-- Glow filter definition -->
+        <defs>
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Scanline overlay -->
+    <div class="scanline"></div>   <
 
     <svg id="graph"></svg>
     <script src="../static/js/graph.js" type="module"></script>
