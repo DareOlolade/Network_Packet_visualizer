@@ -8,7 +8,6 @@ socket.on("connect", () => {
 });
 
 socket.on("packet_batch", (data) => {
-  console.log("Received batch data:", data);
   handleBatch(data);
 });
 

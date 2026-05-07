@@ -3,76 +3,239 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Packet Visualizer</title>
+    <title>NETWATCH</title>
     <link rel="stylesheet" href="../static/css/style.css" />
   </head>
   <body>
-   <!-- Grid background -->
+
+    <!-- ============================================ -->
+    <!-- BACKGROUND LAYERS                            -->
+    <!-- ============================================ -->
     <div class="grid-bg"></div>
+    <div class="vignette"></div>
+    <div class="scanline"></div>
+    <div class="scanline-moving"></div>
 
-    <!-- Header bar -->
-    <div class="header">
-        <div class="header-dot"></div>
-        <div class="header-title">NETWATCH</div>
-        <div class="stat-row">
-            <span class="stat-label" id="header-status">MONITORING</span>
-        </div>
-    </div>
+    <!-- Optional: Matrix-style data rain -->
+    <div class="data-rain" id="data-rain"></div>
 
-    <!-- Stats panel -->
-    <div class="stats-panel">
-        <div class="stats-title">NETWORK STATS</div>
-        <div class="stat-row">
-            <span class="stat-label">NODES</span>
-            <span class="stat-value" id="stat-nodes">0</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">LINKS</span>
-            <span class="stat-value" id="stat-links">0</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">PACKETS</span>
-            <span class="stat-value" id="stat-packets">0</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">TCP</span>
-            <span class="stat-value stat-value-tcp" id="stat-tcp">0</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">UDP</span>
-            <span class="stat-value stat-value-udp" id="stat-udp">0</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">ICMP</span>
-            <span class="stat-value stat-value-icmp" id="stat-icmp">0</span>
-        </div>
-    </div>
-
-    <!-- Terminal log -->
-    <div class="terminal">
-        <div class="terminal-header">PACKET LOG</div>
-        <div class="terminal-body" id="terminal-body"></div>
-    </div>
-
-    <!-- SVG Graph -->
+    <!-- ============================================ -->
+    <!-- SVG GRAPH                                    -->
+    <!-- ============================================ -->
     <svg id="graph">
-        <!-- Glow filter definition -->
-        <defs>
-            <filter id="glow">
-                <feGaussianBlur stdDeviation="3" result="blur"/>
-                <feMerge>
-                    <feMergeNode in="blur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
-        </defs>
+      <defs>
+        <!-- Green glow -->
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        <!-- Blue glow -->
+        <filter id="glow-blue">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feFlood flood-color="#00bfff" flood-opacity="0.3" result="color" />
+          <feComposite in="color" in2="blur" operator="in" result="colorBlur" />
+          <feMerge>
+            <feMergeNode in="colorBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        <!-- Orange glow -->
+        <filter id="glow-orange">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feFlood flood-color="#ff6600" flood-opacity="0.3" result="color" />
+          <feComposite in="color" in2="blur" operator="in" result="colorBlur" />
+          <feMerge>
+            <feMergeNode in="colorBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        <!-- Red glow -->
+        <filter id="glow-red">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feFlood flood-color="#D10000" flood-opacity="0.3" result="color" />
+          <feComposite in="color" in2="blur" operator="in" result="colorBlur" />
+          <feMerge>
+            <feMergeNode in="colorBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        <!-- Animated packet along path -->
+        <circle id="packet-template" r="2" fill="#00ff88" opacity="0.9">
+          <animate attributeName="opacity" values="1;0.4;1" dur="0.6s" repeatCount="indefinite" />
+        </circle>
+      </defs>
     </svg>
 
-    <!-- Scanline overlay -->
-    <div class="scanline"></div>   <
+    <!-- ============================================ -->
+    <!-- HEADER                                       -->
+    <!-- ============================================ -->
+    <div class="header">
+      <div class="header-dots">
+        <div class="header-dot"></div>
+      </div>
 
-    <svg id="graph"></svg>
-    <script src="../static/js/graph.js" type="module"></script>
+      <div class="header-title glitch" data-text="NETWATCH">NETWATCH</div>
+
+    </div>
+
+    <!-- ============================================ -->
+    <!-- STATS PANEL                                  -->
+    <!-- ============================================ -->
+    <div class="stats-panel">
+      <div class="stats-title">NETWORK STATS</div>
+
+      <div class="stat-row">
+        <span class="stat-label">NODES</span>
+        <span class="stat-value" id="stat-nodes">0</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="stat-label">LINKS</span>
+        <span class="stat-value" id="stat-links">0</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="stat-label">PACKETS</span>
+        <span class="stat-value" id="stat-packets">0</span>
+      </div>
+
+      <!-- TCP with bar -->
+      <div class="stat-row">
+        <span class="stat-label">TCP</span>
+        <span class="stat-value stat-value-tcp" id="stat-tcp">0</span>
+      </div>
+      <div class="stat-bar">
+        <div class="stat-bar-fill" id="bar-tcp" style="width: 0%"></div>
+      </div>
+
+      <!-- UDP with bar -->
+      <div class="stat-row">
+        <span class="stat-label">UDP</span>
+        <span class="stat-value stat-value-udp" id="stat-udp">0</span>
+      </div>
+      <div class="stat-bar">
+        <div class="stat-bar-fill stat-bar-fill-udp" id="bar-udp" style="width: 0%"></div>
+      </div>
+
+      <!-- ICMP with bar -->
+      <div class="stat-row">
+        <span class="stat-label">ICMP</span>
+        <span class="stat-value stat-value-icmp" id="stat-icmp">0</span>
+      </div>
+      <div class="stat-bar">
+        <div class="stat-bar-fill stat-bar-fill-icmp" id="bar-icmp" style="width: 0%"></div>
+      </div>
+    </div>
+
+   <!-- ============================================ -->
+<!-- LEGEND PANEL                                 -->
+<!-- ============================================ -->
+<div class="legend">
+  <div class="legend-title">LEGEND</div>
+
+  <div class="legend-item">
+    <div class="legend-dot legend-dot-tcp"></div>
+    <span>Mostly TCP</span>
+  </div>
+
+  <div class="legend-item">
+    <div class="legend-dot legend-dot-udp"></div>
+    <span>Mostly UDP</span>
+  </div>
+
+  <div class="legend-item">
+    <div class="legend-dot legend-dot-icmp"></div>
+    <span>Mostly ICMP</span>
+  </div>
+
+  <div class="legend-item">
+    <div class="legend-dot legend-dot-other"></div>
+    <span>Other</span>
+  </div>
+
+  <div class="legend-separator"></div>
+
+  <div class="legend-hint">
+    ◈ Node size = packet volume<br />
+    ◈ Link thickness = traffic<br />
+    ◈ Hover nodes for details
+  </div>
+</div>
+
+    <!-- ============================================ -->
+    <!-- TERMINAL LOG                                 -->
+    <!-- ============================================ -->
+    <div class="terminal">
+      <div class="terminal-header">PACKET LOG</div>
+      <div class="terminal-body" id="terminal-body">
+        <!-- Log lines injected by JS -->
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- TOOLTIP                                      -->
+    <!-- ============================================ -->
+    <div class="tooltip" id="tooltip">
+      <div class="tooltip-ip" id="tooltip-ip"></div>
+      <div>
+        <span class="tooltip-label">PACKETS: </span>
+        <span class="tooltip-value" id="tooltip-packets"></span>
+      </div>
+      <div>
+        <span class="tooltip-label">PROTOCOLS: </span>
+        <span class="tooltip-value" id="tooltip-protocols"></span>
+      </div>
+      <div>
+        <span class="tooltip-label">CONNECTIONS: </span>
+        <span class="tooltip-value" id="tooltip-connections"></span>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ALERT FLASH OVERLAY (triggered by JS)        -->
+    <!-- ============================================ -->
+    <div class="alert-flash" id="alert-flash" style="display: none;"></div>
+
+    <!-- ============================================ -->
+    <!-- SCRIPTS                                      -->
+    <!-- ============================================ -->
     <script src="../static/js/socket.js" type="module"></script>
+
+    <!-- Data rain generator (optional aesthetic) -->
+    <script>
+      (function initDataRain() {
+        const container = document.getElementById('data-rain');
+        if (!container) return;
+
+        const chars = '01アイウエオカキクケコ:.{}[];/\\|<>?!@#$%&*';
+        const columnCount = Math.floor(window.innerWidth / 30);
+
+        for (let i = 0; i < columnCount; i++) {
+          const column = document.createElement('div');
+          column.classList.add('rain-column');
+          column.style.left = `${(i / columnCount) * 100}%`;
+          column.style.animationDuration = `${10 + Math.random() * 20}s`;
+          column.style.animationDelay = `${-Math.random() * 20}s`;
+          column.style.fontSize = `${10 + Math.random() * 4}px`;
+          column.style.opacity = `${0.03 + Math.random() * 0.06}`;
+
+          let text = '';
+          const length = 20 + Math.floor(Math.random() * 30);
+          for (let j = 0; j < length; j++) {
+            text += chars[Math.floor(Math.random() * chars.length)] + ' ';
+          }
+          column.textContent = text;
+          container.appendChild(column);
+        }
+      })();
+    </script>
+
   </body>
 </html>
